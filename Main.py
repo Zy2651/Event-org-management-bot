@@ -1,53 +1,40 @@
-
-
 import pandas as pd
-import numpy as np
-member_list1 = []
-trophy_list1 = []
-member_list2 = []
-trophy_list2 = []
-member_list3 = []
-trophy_list3 = []
+from functools import reduce
+import requests
+club_amount = int(input("how many clubs does your organization own?"))
 
-number_of_members = int(input("How many members are in the club?"))
-for i in range(number_of_members):
-    member = input("enter a member")
-    member_list1.append(member)
-    trophies = int(input("enter in the member's trophies"))
-    trophy_list1.append(trophies)
+club_list = []
+def club_merge(club_amount,club_list):
+    merged_club = reduce(lambda left, right: pd.merge(left,right, on = 'trophies', how = 'outer'), club_list)
     
-number_of_members2 = int(input("How many members are in the club?"))
-
-for i in range(number_of_members2):
-    member = input("enter a member")
-    member_list2.append(member)
-    trophies = int(input("enter in the member's trophies"))
-    trophy_list2.append(trophies)
-
-number_of_members3= int(input("How many members are in the club?"))
-
-for i in range(number_of_members3):
-    member = input("enter a member")
-    member_list3.append(member)
-    trophies = int(input("enter in the member's trophies"))
-    trophy_list3.append(trophies)
-
     
-Eternal = {"Players" : member_list1,
-        "trophies": trophy_list1
         
-        }
-Eternal_Flames = {"Players" : member_list2,
-            "trophies" : trophy_list2
-            }
-Eternal_Aura = {"Players" : member_list3,
-            "trophies" : trophy_list3
-    
-            }
+        
+    return merged_club
 
-Eternal1 = pd.DataFrame(Eternal)
-Eternal2 = pd.DataFrame(Eternal_Flames)
-Eternal3 = pd.DataFrame(Eternal_Aura)
-combined = pd.merge(Eternal1,Eternal2, on = "trophies", how = "outer")
-EternalCombined = pd.merge(combined, Eternal3, on = "trophies", how = "outer")
-print(EternalCombined.describe())
+
+
+for i in range(club_amount):
+    
+    
+    api_url = input("Enter your url. Find your club's url on the brawl stars developer website. ")
+    api_key = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjMzMWQwNWQzLTYxZTgtNDk2OS05MjI2LTc0ZmVjMWU0NTRiYiIsImlhdCI6MTcyMzQ5NzA5NCwic3ViIjoiZGV2ZWxvcGVyLzlmZGE4M2ZmLTVkNzQtN2NjYi0zYjg5LTRhZjMzN2ZiMzFmNCIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiOTkuMTcwLjMzLjYzIl0sInR5cGUiOiJjbGllbnQifV19.VJIdlCpBaliK2GLQfQvzdwkqiaB1dvJBdmY_Qsq75aPLqlPGC6gtPt55-TFrkncqgqnMRGY-7DX51_cfC3vHrg'    
+    headers = { 
+        'Authorization': f'Bearer {api_key}'
+    }
+
+    response = requests.get(api_url, headers=headers)
+    data = response.json()
+    club_members = data["members"]
+    member_list = []
+    trophy_list = []
+    for member in club_members:
+        member_list.append(member["name"])
+        trophy_list.append(member["trophies"])
+    Club = pd.DataFrame({"Players" : member_list,
+        "trophies": trophy_list})
+    club_list.append(Club)
+    
+organization = club_merge(club_amount, club_list)
+print(organization.describe())
+
