@@ -1,12 +1,12 @@
-
 import discord
 import asyncio
 from discord.ext import commands
 import random
 import requests
 from PIL import Image, ImageDraw, ImageFont
+from io import BytesIO
 
-
+participant_list = []
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -27,7 +27,12 @@ async def ask(ctx):
 
     try:
         message = await client.wait_for('message', check=check, timeout=30.0)
-        await ctx.send(f"Your favorite color is {message.content}!")
+        embed = discord.Embed(
+        title="Favorite color",
+        description= f"Your favorite color is {message.content}",
+        color=discord.Color.red()  
+        )
+        await ctx.send(embed=embed)
     except asyncio.TimeoutError:
         await ctx.send("You took too long to respond!")
 
@@ -39,7 +44,7 @@ async def eternal(ctx):
 async def link(ctx):
     await ctx.send("Copy this link: https://discord.com/oauth2/authorize?client_id=1270194998645887077 to allow the bot to be in your server")
 @client.command()
-async def data(ctx, number: int, organization_name: str):
+async def org_data(ctx, number: int, organization_name: str):
     
     
 
@@ -199,7 +204,7 @@ async def data(ctx, number: int, organization_name: str):
 
 
         
-        api_key =  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjMzMWQwNWQzLTYxZTgtNDk2OS05MjI2LTc0ZmVjMWU0NTRiYiIsImlhdCI6MTcyMzQ5NzA5NCwic3ViIjoiZGV2ZWxvcGVyLzlmZGE4M2ZmLTVkNzQtN2NjYi0zYjg5LTRhZjMzN2ZiMzFmNCIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiOTkuMTcwLjMzLjYzIl0sInR5cGUiOiJjbGllbnQifV19.VJIdlCpBaliK2GLQfQvzdwkqiaB1dvJBdmY_Qsq75aPLqlPGC6gtPt55-TFrkncqgqnMRGY-7DX51_cfC3vHrg'
+        api_key =  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjJjMmM1MTQxLTljMmYtNDM3Yi1iY2IzLTU1NWJjNWQyYjQ4MiIsImlhdCI6MTcyMzkzMTE3Miwic3ViIjoiZGV2ZWxvcGVyLzlmZGE4M2ZmLTVkNzQtN2NjYi0zYjg5LTRhZjMzN2ZiMzFmNCIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiMTYyLjI1NS45NS4xMjkiXSwidHlwZSI6ImNsaWVudCJ9XX0.Wchs9uAWFRDkU8NndDRHVSMi62khKw1CGv_GvlXseK2zY1RDqt3A-OSUQlDv1V2Bu41FWMEl6dyM_jEv-Va2AQ'
         headers = {
             'Authorization': f'Bearer {api_key}'
         }
@@ -215,23 +220,22 @@ async def data(ctx, number: int, organization_name: str):
         club_list.append(data["name"])
     if number > 1:
         for i in range(len(club_trophy_list)):
-            await ctx.send(club_list[i] + "'s descriptive statistics")
-            await ctx.send("Member Count - "+ str(count(club_trophy_list[i], check2d(club_trophy_list[i]))))
-            await ctx.send("Median Trophies - "+ str(median(club_trophy_list[i], check2d(club_trophy_list[i]))))
-            await ctx.send("The 25 percentile's Trophies - "+ str(firstQuatile(club_trophy_list[i], check2d(club_trophy_list[i]))))
-            await ctx.send("The 75 percentile's Trophies - "+ str(thirdQuatile(club_trophy_list[i], check2d(club_trophy_list[i]))))
-            await ctx.send("Mean Trophies - " + str(mean(club_trophy_list[i], check2d(club_trophy_list[i]))))
-            await ctx.send("Max Trophies - "+ str(maximum(club_trophy_list[i], check2d(club_trophy_list[i]))))
-            await ctx.send("Min Trophies - "+ str(minumum(club_trophy_list[i], check2d(club_trophy_list[i]))))
+            
+            embed = discord.Embed(
+            title=f"{club_list[i]}",
+            description= f"Member Count - {str(count(club_trophy_list[i], check2d(club_trophy_list[i])))}\n Median Trophies - {str(median(club_trophy_list[i], check2d(club_trophy_list[i])))}\n The 25 percentile's Trophies - {str(firstQuatile(club_trophy_list[i], check2d(club_trophy_list[i])))}\n The 75 percentile's Trophies - {str(thirdQuatile(club_trophy_list[i], check2d(club_trophy_list[i])))} \n Mean Trophies - {str(mean(club_trophy_list[i], check2d(club_trophy_list[i])))}\n Max Trophies - {str(maximum(club_trophy_list[i], check2d(club_trophy_list[i])))}\n Min Trophies - {str(minumum(club_trophy_list[i], check2d(club_trophy_list[i])))} ",
+            color=discord.Color.red()  
+            )
+            await ctx.send(embed=embed)
+            
     
-    await ctx.send(organization_name + "'s descriptive statistics")
-    await ctx.send("Member Count - " + str(count((club_trophy_list), check2d(club_trophy_list))))
-    await ctx.send( "Median Trophies - " + str(median((club_trophy_list), check2d(club_trophy_list))))
-    await ctx.send("The 25 percentile's Trophies - "+ str(firstQuatile(club_trophy_list, check2d(club_trophy_list))))
-    await ctx.send("The 75 percentile's Trophies - "+ str(thirdQuatile(club_trophy_list, check2d(club_trophy_list))))
-    await ctx.send("Mean Trophies - " + str(mean(club_trophy_list, check2d(club_trophy_list))))
-    await ctx.send("Max Trophies - "+ str(maximum(club_trophy_list, check2d(club_trophy_list))))
-    await ctx.send("Min Trophies - "+ str(minumum(club_trophy_list, check2d(club_trophy_list))))
+    embed1 = discord.Embed(
+    title = organization_name,
+    description= f"Member Count - {str(count(club_trophy_list, check2d(club_trophy_list)))}\n Median Trophies - {str(median(club_trophy_list, check2d(club_trophy_list)))}\n The 25 percentile's Trophies - {str(firstQuatile(club_trophy_list, check2d(club_trophy_list)))}\n The 75 percentile's Trophies - {str(thirdQuatile(club_trophy_list, check2d(club_trophy_list)))} \n Mean Trophies - {str(mean(club_trophy_list, check2d(club_trophy_list)))}\n Max Trophies - {str(maximum(club_trophy_list, check2d(club_trophy_list)))}\n Min Trophies - {str(minumum(club_trophy_list, check2d(club_trophy_list)))} ",
+    color=discord.Color.red()  
+    )
+    await ctx.send(embed=embed1)
+
         
 @client.command()
 @commands.has_permissions(kick_members=True) 
@@ -285,16 +289,16 @@ async def create_bracket(ctx, names: str, bracket_size: int):
         bracket_list.append("bye")
     
     j = 0
-    
-    while j < bracket_size:        
+    times = len(name_list)
+    while j < times :        
         index = random.randint(0,len(name_list) - 1)
         index2 = random.randint(0,len(bracket_list) - 1)
         if bracket_list[index2] == "bye":
             bracket_list[index2] = name_list[index]
             name_list.remove(name_list[index])
             j = j + 1
-    await ctx.send(bracket_list)
-    # Create a blank white image
+    
+  
     img = Image.new('RGB', (700, 800), color=(255, 255, 255))
     draw = ImageDraw.Draw(img)
     
@@ -304,6 +308,7 @@ async def create_bracket(ctx, names: str, bracket_size: int):
     
     tries = bracket_size
     if bracket_size == 16:
+        
         y = 0
         y2 = 10
         y3 = 10
@@ -311,8 +316,8 @@ async def create_bracket(ctx, names: str, bracket_size: int):
         x2 = 50
         for i in range(tries):
             draw.text((10,y),text=bracket_list[i],fill=text_color, font=font)
-            draw.line((x, y2, x2, y2), fill='black', width=1)
             y = y + 50
+            draw.line((x, y2, x2, y2), fill='black', width=1)
             y2 = y2 + 50
         tries = int(tries / 2)
         for i in range(tries):
@@ -320,20 +325,173 @@ async def create_bracket(ctx, names: str, bracket_size: int):
             y3 = y3 + 100
         x = x + 50
         x2 = x2 + 50
-        y = 0
+        
         y2 = 35
         y3 = 35
         for i in range(tries):
             draw.line((x, y2, x2, y2), fill='black', width=1)
-            y = y + 100
+            
             y2 = y2 + 100
+        tries = int(tries/2)
+        for i in range(tries):
+            draw.line((x2, y3, x2, y3+100), fill='black', width=1)
+            y3 = y3 + 200
+        x = x + 50
+        x2 = x2 + 50
+        y2 = 80
+        y3 = 80
+        for i in range(tries):
+            draw.line((x, y2, x2, y2), fill='black', width=1)
+            y2 = y2 + 200
+        
+        tries = int(tries/2)
+        
+        for i in range(tries):
+            draw.line((x2, y3, x2, y3+200), fill='black', width=1)
+            y3 = y3 + 400
+        x = x + 50
+        x2 = x2 + 50
+        y2 = 180
+        y3 = 180
+        for i in range(tries):
+            draw.line((x, y2, x2, y2), fill='black', width=1)
+            y2 = y2 + 400
+        tries = int(tries/2)
+        for i in range(tries):
+            draw.line((x2, y3, x2, y3+400), fill='black', width=1)
+            y3 = y3 + 400
+        x = x + 50
+        x2 = x2 + 50
+        y2 = 400
+        y3 = 180
+        for i in range(tries):
+            draw.line((x, y2, x2, y2), fill='black', width=1)
 
+            
         
     
-    # Save the image locally
+   
     img.save("generated_image.png")
     
-    # Send the image in Discord
+    
     with open("generated_image.png", "rb") as f:
         picture = discord.File(f)
         await ctx.send(file=picture)
+
+SPECIFIC_CHANNEL_ID = 1270196994660630531
+@client.event
+async def on_message(message):
+    
+    if message.author == client.user:
+        return
+
+    if message.channel.id == SPECIFIC_CHANNEL_ID and "hello" in message.content.lower():
+        username = message.author.name
+        true = True
+        for i in range(len(participant_list)):
+            if username == participant_list:
+                true = False
+        if true:
+            participant_list.append(username)
+            
+
+
+    
+    await client.process_commands(message)
+
+@client.command()
+async def giveNames(ctx):
+    for i in range(len(participant_list)):
+        await ctx.send(participant_list[i])
+
+@client.command()
+async def update_bracket(ctx, names: str, amount_of_people: int, image_url: str = None):
+    name_list = []
+    def checkComma(comma):
+        if comma == ",":
+            return True
+        return False
+    def sortNames(names):
+        
+        startingIndex = 0 
+        i = 0
+        while (i < len(names)):
+    
+                if(i + 1 == len(names) or checkComma(names[i + 1])):
+                    name_list.append(names[startingIndex:i + 1])
+                    startingIndex = i + 2
+                i = i + 1
+    if not image_url:
+        await ctx.send("Please provide an image URL.")
+        return
+
+    try:
+        
+        response = requests.get(image_url)
+        response.raise_for_status()  
+        image_data = BytesIO(response.content)  
+        image = Image.open(image_data) 
+    except requests.exceptions.MissingSchema:
+        await ctx.send("Invalid URL. Please provide a valid image URL.")
+        return
+    except requests.exceptions.RequestException as e:
+        await ctx.send(f"Failed to download the image. Error: {e}")
+        return
+    except Exception as e:
+        await ctx.send(f"Failed to process the image. Error: {e}")
+        return
+
+    
+    
+    draw = ImageDraw.Draw(image)
+    
+    
+    font = ImageFont.truetype("arial.ttf", 8)
+    text_color = (0, 0, 0) 
+    
+    
+    
+    if amount_of_people == 8:
+        sortNames(names)
+        y = 15
+        x = 40
+        for i in range(amount_of_people):
+            draw.text((x, y), text=name_list[i], fill=text_color, font=font)
+            y = y + 68
+    if amount_of_people == 4:
+        sortNames(names)
+        y = 45
+        x = 80
+        for i in range(amount_of_people):
+            draw.text((x, y), text=name_list[i], fill=text_color, font=font)
+            y = y + 137
+    if amount_of_people == 2:
+        sortNames(names)
+        y = 115
+        x = 110
+        for i in range(amount_of_people):
+            draw.text((x, y), text=name_list[i], fill=text_color, font=font)
+            y = y + 271
+    if amount_of_people == 1:
+        sortNames(names)
+        y = 265
+        x = 150
+        for i in range(amount_of_people):
+            draw.text((x, y), text=name_list[i], fill=text_color, font=font)
+            y = y + 271
+
+    edited_image = BytesIO()
+    image.save(edited_image, format="PNG")
+    edited_image.seek(0)  
+
+    
+    file = discord.File(fp=edited_image, filename="edited_image.png")
+    await ctx.send("Here is your edited image:", file=file)
+        
+
+
+
+
+
+    
+    
