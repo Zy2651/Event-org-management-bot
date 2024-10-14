@@ -204,7 +204,7 @@ async def org_data(ctx, number: int, organization_name: str):
 
 
         
-        api_key =  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjJjMmM1MTQxLTljMmYtNDM3Yi1iY2IzLTU1NWJjNWQyYjQ4MiIsImlhdCI6MTcyMzkzMTE3Miwic3ViIjoiZGV2ZWxvcGVyLzlmZGE4M2ZmLTVkNzQtN2NjYi0zYjg5LTRhZjMzN2ZiMzFmNCIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiMTYyLjI1NS45NS4xMjkiXSwidHlwZSI6ImNsaWVudCJ9XX0.Wchs9uAWFRDkU8NndDRHVSMi62khKw1CGv_GvlXseK2zY1RDqt3A-OSUQlDv1V2Bu41FWMEl6dyM_jEv-Va2AQ'
+        api_key = put in your api key in the brawl stars api website
         headers = {
             'Authorization': f'Bearer {api_key}'
         }
